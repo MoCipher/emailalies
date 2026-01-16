@@ -1,6 +1,9 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  // Enable Turbopack for Next.js 16 compatibility
+  turbopack: {},
+
   // External packages for server-side rendering
   serverExternalPackages: ['better-sqlite3'],
 
