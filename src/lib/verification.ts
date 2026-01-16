@@ -167,12 +167,3 @@ if (!isBuildTime) {
 
 // Export mock initially, replace at runtime
 export let VerificationManager = mockVerificationManager;
-
-// Replace with real implementation at runtime
-if (!isBuildTime) {
-  getRealVerificationManager().then((realManager) => {
-    VerificationManager = realManager;
-  }).catch((error) => {
-    console.warn('Failed to load real VerificationManager, using mock');
-  });
-}
