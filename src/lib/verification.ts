@@ -8,23 +8,23 @@ const verificationCodes = new Map<string, VerificationCode>();
 const isBuildTime = typeof window === 'undefined' && !process.env.RESEND_API_KEY;
 
 // Mock implementations for build time
-const mockVerificationManager = {
-  createCode: (email: string, purpose: 'register' | 'login') => {
+const mockVerificationManager: VerificationManagerType = {
+  createCode(email: string, purpose: 'register' | 'login'): string {
     console.log(`[BUILD TIME] Mock createCode: ${email} for ${purpose}`);
     return '123456'; // Mock code
   },
 
-  verifyCode: (email: string, code: string): VerificationCode | null => {
+  verifyCode(email: string, code: string): VerificationCode | null {
     console.log(`[BUILD TIME] Mock verifyCode: ${email} with ${code}`);
     return { email, code, expiresAt: new Date(), purpose: 'register' as const };
   },
 
-  sendCode: async (email: string, code: string, purpose: 'register' | 'login') => {
+  async sendCode(email: string, code: string, purpose: 'register' | 'login'): Promise<boolean> {
     console.log(`[BUILD TIME] Mock sendCode: ${email} - ${code} for ${purpose}`);
     return true;
   },
 
-  cleanupExpiredCodes: () => {
+  cleanupExpiredCodes(): void {
     console.log('[BUILD TIME] Mock cleanupExpiredCodes');
   }
 };
@@ -55,7 +55,7 @@ async function createRealVerificationManager() {
     };
 
     // Return the real verification manager
-    return {
+    const realManager: VerificationManagerType = {
       createCode(email: string, purpose: 'register' | 'login'): string {
         const code = Math.floor(100000 + Math.random() * 900000).toString();
         const expiresAt = new Date(Date.now() + 10 * 60 * 1000);
@@ -150,6 +150,8 @@ async function createRealVerificationManager() {
         }
       }
     };
+
+    return realManager;
   } catch (error) {
     console.warn('Failed to create real verification manager, using mock');
     return mockVerificationManager;
@@ -165,5 +167,13 @@ if (!isBuildTime) {
   });
 }
 
+// Define the VerificationManager interface
+interface VerificationManagerType {
+  createCode(email: string, purpose: 'register' | 'login'): string;
+  verifyCode(email: string, code: string): VerificationCode | null;
+  sendCode(email: string, code: string, purpose: 'register' | 'login'): Promise<boolean>;
+  cleanupExpiredCodes(): void;
+}
+
 // Export mock initially, replace at runtime
-export let VerificationManager = mockVerificationManager;
+export let VerificationManager: VerificationManagerType = mockVerificationManager;
