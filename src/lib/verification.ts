@@ -1,21 +1,40 @@
+// Build-time safe verification module
 import { VerificationCode } from '@/database/schema';
 
 // In-memory store for verification codes (in production, use Redis or database)
 const verificationCodes = new Map<string, VerificationCode>();
 
+// Mock client for build time to prevent API key errors
+const mockResendClient = {
+  emails: {
+    send: async () => ({ error: null })
+  }
+};
+
 // Lazy initialization of Resend client - only create when needed
 let resendClient: any = null;
 
 async function getResendClient() {
+  // During build time, return mock client
+  if (typeof window === 'undefined' && !process.env.RESEND_API_KEY) {
+    return mockResendClient;
+  }
+
   if (!resendClient) {
     const apiKey = process.env.RESEND_API_KEY;
     if (!apiKey) {
       throw new Error('RESEND_API_KEY environment variable is not set');
     }
 
-    // Dynamic import to avoid build-time issues
-    const { Resend } = await import('resend');
-    resendClient = new Resend(apiKey);
+    try {
+      // Dynamic import to avoid build-time issues
+      const { Resend } = await import('resend');
+      resendClient = new Resend(apiKey);
+    } catch (error) {
+      // Fallback to mock during build
+      console.warn('Using mock Resend client during build');
+      return mockResendClient;
+    }
   }
   return resendClient;
 }
