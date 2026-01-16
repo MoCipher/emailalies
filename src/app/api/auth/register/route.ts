@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getDatabase } from '@/database/db';
-import { VerificationManager } from '@/lib/verification';
 import { z } from 'zod';
 
 const registerSchema = z.object({
@@ -22,6 +21,9 @@ export async function POST(request: NextRequest) {
         { status: 409 }
       );
     }
+
+    // Dynamically import VerificationManager to avoid build-time issues
+    const { VerificationManager } = await import('@/lib/verification');
 
     // Generate and send verification code
     const code = VerificationManager.createCode(email, 'register');

@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getDatabase } from '@/database/db';
-import { VerificationManager } from '@/lib/verification';
 import { MasterKeyManager } from '@/lib/encryption';
 import { z } from 'zod';
 
@@ -15,6 +14,9 @@ export async function POST(request: NextRequest) {
     const { email, code } = verifyCodeSchema.parse(body);
 
     const db = getDatabase();
+
+    // Dynamically import VerificationManager to avoid build-time issues
+    const { VerificationManager } = await import('@/lib/verification');
 
     // Verify the code
     const verification = VerificationManager.verifyCode(email, code);
