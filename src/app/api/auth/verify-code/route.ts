@@ -3,6 +3,9 @@ import { getDatabase } from '@/database/db';
 import { MasterKeyManager } from '@/lib/encryption';
 import { z } from 'zod';
 
+// Force dynamic rendering to prevent static analysis during build
+export const dynamic = 'force-dynamic';
+
 const verifyCodeSchema = z.object({
   email: z.string().email(),
   code: z.string().length(6),
