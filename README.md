@@ -1,36 +1,198 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# EmailAlies - Secure Email Aliases
 
-## Getting Started
+A modern, encrypted email aliasing service that protects your privacy by creating disposable email addresses that forward to your real inbox. Built with end-to-end encryption, cross-device synchronization, and a beautiful modern UI.
 
-First, run the development server:
+## 🚀 Features
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+- **🔐 End-to-End Encryption**: All emails and user data are encrypted before leaving your device
+- **📧 Disposable Aliases**: Create unlimited email aliases for different purposes
+- **🌙 Dark/Light Mode**: Modern responsive UI with theme support
+- **📱 Cross-Device Sync**: Access your aliases from any device securely
+- **🏠 Local Hosting**: Run on your own device or deploy to the cloud
+- **🛡️ Privacy First**: No tracking, no data collection, your data stays yours
+
+## 🏗️ Architecture
+
+- **Frontend**: Next.js 16 with TypeScript, Tailwind CSS, and modern React
+- **Backend**: Next.js API routes with SQLite database
+- **Encryption**: AES-GCM encryption using Web Crypto API
+- **Database**: SQLite with better-sqlite3 for local storage
+- **Styling**: Tailwind CSS with custom design system
+
+## 🚀 Quick Start
+
+### Prerequisites
+
+- Node.js 18+
+- npm or yarn
+
+### Local Development
+
+1. **Clone and install dependencies:**
+   ```bash
+   git clone <repository-url>
+   cd emailalies
+   npm install
+   ```
+
+2. **Initialize the database:**
+   ```bash
+   npm run db:init
+   ```
+
+3. **Start the development server:**
+   ```bash
+   npm run dev
+   ```
+
+4. **Open [http://localhost:3000](http://localhost:3000)**
+
+### Cloudflare Deployment
+
+1. **Install Wrangler CLI:**
+   ```bash
+   npm install -g wrangler
+   ```
+
+2. **Login to Cloudflare:**
+   ```bash
+   wrangler auth login
+   ```
+
+3. **Deploy to Cloudflare Pages:**
+   ```bash
+   npm run cf:deploy
+   ```
+
+## 📁 Project Structure
+
+```
+src/
+├── app/                    # Next.js App Router
+│   ├── api/               # API routes
+│   │   ├── aliases/       # Alias management
+│   │   ├── auth/          # Authentication
+│   │   └── sync/          # Device synchronization
+│   ├── globals.css        # Global styles
+│   ├── layout.tsx         # Root layout
+│   └── page.tsx           # Main dashboard
+├── components/            # React components
+│   └── ui/               # Reusable UI components
+├── database/             # Database layer
+│   ├── db.ts            # Database connection and queries
+│   └── schema.ts        # TypeScript types
+├── lib/                  # Utility libraries
+│   ├── encryption.ts    # Encryption utilities
+│   ├── sync.ts          # Cross-device sync
+│   └── utils.ts         # Helper functions
+└── types/               # TypeScript type definitions
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## 🔐 Security Features
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+- **Client-Side Encryption**: Emails are encrypted in the browser before transmission
+- **Email Verification**: Passwordless authentication using email verification codes
+- **AES-GCM Encryption**: Industry-standard encryption for data at rest
+- **Service Key Encryption**: Master keys encrypted with service-managed keys
+- **Session Management**: Secure token-based authentication
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## 🔄 Cross-Device Synchronization
 
-## Learn More
+EmailAlies supports secure synchronization across multiple devices:
 
-To learn more about Next.js, take a look at the following resources:
+1. **Device Registration**: Each device gets a unique encryption key
+2. **Change Tracking**: All data changes are tracked and encrypted
+3. **Conflict Resolution**: Automatic merging of changes between devices
+4. **Selective Sync**: Only sync data that's changed since last sync
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## 🌐 API Endpoints
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+### Authentication
+- `POST /api/auth/register` - Send verification code for registration
+- `POST /api/auth/login` - Send verification code for login
+- `POST /api/auth/verify-code` - Verify code and complete authentication
 
-## Deploy on Vercel
+### Aliases
+- `GET /api/aliases` - List user aliases
+- `POST /api/aliases` - Create new alias
+- `PUT /api/aliases/[id]` - Update alias
+- `DELETE /api/aliases/[id]` - Delete alias
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+### Synchronization
+- `POST /api/sync` - Sync device data
+- `GET /api/sync` - Get device list
+- `POST /api/sync/register-device` - Register new device
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## 🛠️ Development Scripts
+
+```bash
+npm run dev          # Start development server
+npm run build        # Build for production
+npm run start        # Start production server
+npm run lint         # Run ESLint
+npm run cf:deploy    # Deploy to Cloudflare Pages
+npm run cf:dev       # Cloudflare development mode
+npm run db:init      # Initialize database
+npm run db:migrate   # Run database migrations
+```
+
+## 🔧 Configuration
+
+### Environment Variables
+
+Create a `.env.local` file for local development:
+
+```env
+# Get your API key from https://resend.com (free tier available)
+RESEND_API_KEY=re_your_resend_api_key_here
+
+# Database (defaults to local SQLite)
+DATABASE_URL=./data/emailalies.db
+
+# Development
+NODE_ENV=development
+```
+
+#### Setting up Email Service
+
+1. **Sign up for Resend**: Go to [resend.com](https://resend.com) and create a free account
+2. **Get your API key**: Go to API Keys section in your dashboard
+3. **Add to environment**: Copy your API key to `.env.local` as `RESEND_API_KEY`
+4. **Verify domain** (optional): For production, verify your domain in Resend dashboard
+
+The app will send beautiful HTML emails with verification codes automatically.
+
+### Cloudflare Configuration
+
+The `wrangler.toml` file contains Cloudflare-specific configuration:
+
+- **Pages Deployment**: Configured for Cloudflare Pages
+- **Node.js Compatibility**: Enabled for SQLite support
+- **Environment Variables**: Configured for production
+
+## 🤝 Contributing
+
+1. Fork the repository
+2. Create a feature branch: `git checkout -b feature/your-feature`
+3. Commit your changes: `git commit -am 'Add your feature'`
+4. Push to the branch: `git push origin feature/your-feature`
+5. Submit a pull request
+
+## 📄 License
+
+This project is licensed under the MIT License - see the LICENSE file for details.
+
+## 🆘 Support
+
+For support, please:
+1. Check the [Issues](https://github.com/your-repo/issues) page
+2. Create a new issue with detailed information
+3. Join our community discussions
+
+## 🚨 Security
+
+If you discover any security vulnerabilities, please email security@emailalies.com instead of creating a public issue.
+
+---
+
+**Built with ❤️ for privacy and security**
