@@ -4,8 +4,19 @@ import { Resend } from 'resend';
 // In-memory store for verification codes (in production, use Redis or database)
 const verificationCodes = new Map<string, VerificationCode>();
 
-// Initialize Resend with API key
-const resend = new Resend(process.env.RESEND_API_KEY);
+// Lazy initialization of Resend client
+let resend: Resend | null = null;
+
+function getResendClient(): Resend {
+  if (!resend) {
+    const apiKey = process.env.RESEND_API_KEY;
+    if (!apiKey) {
+      throw new Error('RESEND_API_KEY environment variable is not set');
+    }
+    resend = new Resend(apiKey);
+  }
+  return resend;
+}
 
 export class VerificationManager {
   /**
@@ -75,7 +86,7 @@ export class VerificationManager {
       const subject = purpose === 'register' ? 'Welcome to EmailAlies - Verify Your Account' : 'EmailAlies - Sign In Code';
       const purposeText = purpose === 'register' ? 'create your account' : 'sign in';
 
-      const { error } = await resend.emails.send({
+      const { error } = await getResendClient().emails.send({
         from: 'EmailAlies <noreply@emailalies.com>',
         to: [email],
         subject: subject,
