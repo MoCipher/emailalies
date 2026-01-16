@@ -175,5 +175,5 @@ interface VerificationManagerType {
   cleanupExpiredCodes(): void;
 }
 
-// Export mock initially, replace at runtime
-export let VerificationManager: VerificationManagerType = mockVerificationManager;
+// Export mock manager - API routes handle dynamic loading
+export const VerificationManager = mockVerificationManager;
