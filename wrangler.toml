@@ -1,7 +1,10 @@
 # Cloudflare Pages Configuration
-# Minimal config for Pages projects
+# Configuration for Pages deployment
 
 name = "emailalies"
+
+# Build output directory for Next.js
+pages_build_output_dir = ".next"
 
 # Environment variables for production
 [vars]
